@@ -253,7 +253,7 @@ impl Editor {
         let height = self.terminal.size().height as usize;
 
         let mut offset = &mut self.offset;
-        if (y < offset.y) {
+        if y < offset.y {
             offset.y = y;
         } else if y >= offset.y.saturating_add(height) {
             offset.y = y.saturating_sub(height).saturating_add(1);
