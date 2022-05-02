@@ -49,7 +49,7 @@ impl Editor {
         let mut initial_status = String::from("HELP: Ctrl-Q = quit");
         let document = if args.len() > 1 {
             let file_name = &args[1];
-            let doc = Document::open(&file_name);
+            let doc = Document::open(file_name);
             if doc.is_ok() {
                 doc.unwrap()
             } else {
@@ -69,12 +69,12 @@ impl Editor {
         }
     }
     fn draw_status_bar(&self) {
-        let mut status;
+        
 
         let width = self.terminal.size().width as usize;
         let mut file_name = "[No Name]".to_string();
         if let Some(name) = &self.document.file_name {
-            file_name = name.to_owned();
+            file_name = name.clone();
             file_name.truncate(20);
         }
         let line_indicator = format!(
@@ -83,7 +83,7 @@ impl Editor {
             self.document.len()
         );
 
-        status = format!("{} - {} lines", file_name, self.document.len());
+        let mut status = format!("{} - {} lines", file_name, self.document.len());
         let len = status.len() + line_indicator.len();
         if width > len {
             status.push_str(&" ".repeat(width - status.len()));

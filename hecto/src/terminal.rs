@@ -49,7 +49,7 @@ impl Terminal {
     pub fn reset_fg_color() {
         print!("{}", color::Fg(color::Reset));
     }
-    pub fn size(&self) -> &Size {
+    #[must_use] pub fn size(&self) -> &Size {
         &self.size
     }
     pub fn clear_screen() {
