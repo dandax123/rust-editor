@@ -46,7 +46,7 @@ pub struct Editor {
 impl Editor {
     pub fn new() -> Self {
         let args: Vec<String> = env::args().collect();
-        let mut initial_status = String::from("HELP: Ctrl-Q = quit");
+        let mut initial_status = String::from("HELP: Ctrl-S = save  |  Ctrl-Q = quit");
         let document = if args.len() > 1 {
             let file_name = &args[1];
             let doc = Document::open(file_name);
@@ -241,6 +241,15 @@ impl Editor {
                 if self.cursor_position.x > 0 || self.cursor_position.y > 0 {
                     self.move_cursor(Key::Left);
                     self.document.delete(&self.cursor_position);
+                }
+            }
+            Key::Ctrl('s') => {
+                if self.document.save().is_ok() {
+                    self.status_message =
+                        StatusMessage::from("File saved successfully.".to_string())
+                } else {
+                    self.status_message =
+                        StatusMessage::from("Error writing contents to file!".to_string())
                 }
             }
             Key::Up

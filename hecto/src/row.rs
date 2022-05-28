@@ -1,5 +1,3 @@
-use std::slice::SliceIndex;
-
 use unicode_segmentation::UnicodeSegmentation;
 #[derive(Default)]
 pub struct Row {
