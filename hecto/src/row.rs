@@ -1,4 +1,7 @@
+use std::slice::SliceIndex;
+
 use unicode_segmentation::UnicodeSegmentation;
+#[derive(Default)]
 pub struct Row {
     string: String,
     len: usize,
@@ -16,7 +19,8 @@ impl From<&str> for Row {
 }
 
 impl Row {
-    #[must_use] pub fn render(&self, start: usize, end: usize) -> String {
+    #[must_use]
+    pub fn render(&self, start: usize, end: usize) -> String {
         let end = std::cmp::min(end, self.string.len());
         let start = std::cmp::min(start, end);
         let mut result = String::new();
@@ -34,15 +38,61 @@ impl Row {
         result
     }
 
-    #[must_use] pub fn len(&self) -> usize {
+    #[must_use]
+    pub fn len(&self) -> usize {
         self.string[..].graphemes(true).count()
     }
 
-    #[must_use] pub fn is_empty(&self) -> bool {
+    #[must_use]
+    pub fn is_empty(&self) -> bool {
         self.len == 0
     }
 
     pub fn update_len(&mut self) {
         self.len = self.string.as_str().graphemes(true).count();
+    }
+
+    pub fn insert(&mut self, at: usize, c: char) {
+        if at >= self.len() {
+            self.string.push(c);
+        } else {
+            let mut result: String = self.string[..].graphemes(true).take(at).collect();
+            let remainder: String = self.string[..].graphemes(true).skip(at).collect();
+
+            result.push(c);
+            result.push_str(&remainder);
+            self.string = result;
+        }
+        self.update_len()
+    }
+
+    pub fn delete(&mut self, at: usize) {
+        if at >= self.len() {
+            return;
+        } else {
+            let mut result: String = self.string[..].graphemes(true).take(at).collect();
+            let remainder: String = self.string[..].graphemes(true).skip(at + 1).collect();
+            result.push_str(&remainder);
+            self.string = result;
+        }
+        self.update_len()
+    }
+
+    pub fn append(&mut self, new: &Self) {
+        self.string = format!("{}{}", self.string, new.string);
+        self.update_len();
+    }
+    pub fn split(&mut self, at: usize) -> Self {
+        let beginning: String = self.string[..].graphemes(true).take(at).collect();
+        let remainder: String = self.string[..].graphemes(true).skip(at).collect();
+
+        self.string = beginning;
+
+        self.update_len();
+        Self::from(&remainder[..])
+    }
+
+    pub fn as_bytes(&self) -> &[u8] {
+        self.string.as_bytes()
     }
 }
